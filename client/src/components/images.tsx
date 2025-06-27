@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom';
+
 type ImagesProps = {
   links: string[]
 }
@@ -21,18 +23,20 @@ const Images = ({ links }: ImagesProps) => {
             marginBottom: '12px',
           }}
         >
-          <img
-            src={src}
-            alt={`Uploaded ${i}`}
-            style={{
-              width: '100%',
-              height: 'auto',
-              objectFit: 'contain',
-              border: 'none',
-              borderRadius: '0px',
-              display: 'block'
-            }}
-          />
+          <Link to={`/image/${encodeURIComponent(src)}`} style={{ display: 'block', textDecoration: 'none' }}>
+            <img
+              src={src}
+              alt={`Uploaded ${i}`}
+              style={{
+                width: '100%',
+                height: 'auto',
+                objectFit: 'contain',
+                border: 'none',
+                borderRadius: '0px',
+                display: 'block'
+              }}
+            />
+          </Link>
         </div>
       ))}
     </div>
