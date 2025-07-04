@@ -4,7 +4,7 @@ import axios from "axios";
 import styled from "styled-components";
 
 interface UploadProps {
-  uploadFilter: (url: string) => void;
+  uploadFilter: (urls: string[]) => void;
   buttonLabel?: string;
 }
 
@@ -24,7 +24,12 @@ const Upload = ({ uploadFilter, buttonLabel = "Find My Face" }: UploadProps) => 
         `https://api.imgbb.com/1/upload?key=6f772e6424c923f56c1497d33cdf5aef`,
         formData
       );
-      uploadFilter(res.data.data.url);
+      console.log(res.data.data.url);
+      const result = await axios.post("http://localhost:3000/apiv2/facefilter",{
+        url : res.data.data.url
+      })
+      console.log(result.data.matches)
+      uploadFilter(result.data.matches)
     } catch (err) {
       console.error("upload failed", err);
     } finally {

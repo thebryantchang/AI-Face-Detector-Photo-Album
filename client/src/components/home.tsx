@@ -5,7 +5,9 @@ import '../App.css';
 import './home.css';
 import axios from 'axios';
 import styled from 'styled-components';
-import React from 'react';
+import bgImage from '../assets/hero.png';
+
+
 
 const CategoryNavbar = styled.div`
   display: flex;
@@ -52,62 +54,27 @@ const CategoryButton = styled.button<{ active: boolean }>`
   }
 `;
 
-const Spinner = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 200px;
-  width: 100%;
-  &::after {
-    content: '';
-    display: block;
-    width: 48px;
-    height: 48px;
-    border: 5px solid #0d6efd;
-    border-top: 5px solid #fff;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-  }
-  @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
-`;
-
-const EmptyState = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 200px;
-  color: #888;
-  font-size: 1.2rem;
-  text-align: center;
-  svg {
-    margin-bottom: 12px;
-    opacity: 0.5;
-  }
-`;
-
 function App() {
   const categories = ['all', 'day-one', 'awards', 'networking', 'royalty', 'last Day', 'penultimate Day', 'VIP Tour', 'Conference', 'test', 'tryout', 'scrollable'];
   const [links, setLinks] = useState<string[]>([]);
   const [selected, setSelected] = useState('all');
   const [referenceurl, setReferenceurl] = useState("");
-  const [loading, setLoading] = useState(true);
 
   const onSelect = (category: string) => setSelected(category);
 
   useEffect(() => {
-    setLoading(true);
-    axios.get('/api/loadimages').then(res => {
-      setLinks(res.data);
-      setLoading(false);
-    }).catch(() => setLoading(false));
+    axios.get('/api/loadimages').then(res => setLinks(res.data));
   }, []);
 
   return (
     <div className="app-container">
+
+      <img 
+        src={bgImage} 
+        style={{width: '100vw', height: '100vh', objectFit: 'cover', marginLeft: 'calc(-50vw + 50%)'}} 
+        alt="Background"
+      />
+
       {/* Header Section */}
       <div className="d-flex justify-content-between align-items-center mb-3 px-2 mt-4">
         <div className="total-count-display">
@@ -149,34 +116,18 @@ function App() {
         })}
       </CategoryNavbar>
 
-      {/* Image Grid with loading and empty state */}
-      {loading ? (
-        <Spinner />
-      ) : links.length === 0 ? (
-        <EmptyState>
-          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#bbb" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <rect x="3" y="3" width="18" height="18" rx="2"/>
-            <circle cx="8.5" cy="8.5" r="1.5"/>
-            <path d="M21 15l-5-5L5 21"/>
-          </svg>
-          No images to display yet 
-        </EmptyState>
-      ) : (
-        <Images links={links} />
-      )}
+      {/* Image Grid */}
+      <Images links={links} />
 
       {/* Floating Upload Button */}
       {/* Floating Find My Face Button */}
       <div className="floating-find-face">
         <Upload 
-          uploadFilter={async (url: string) => {
-            setReferenceurl(url);
+          uploadFilter={async (urls: string[]) => {
+
             try {
-              const res = await axios.post('/api/facefilter', {
-                reference: url,
-                candidates: links
-              });
-              setLinks(res.data);
+              
+              setLinks(urls);
             } catch (err) {
               console.error("Face filter failed:", err);
             }
